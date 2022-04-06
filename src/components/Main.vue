@@ -7,138 +7,21 @@
         <button class="d-block ms-4" v-on:click="isYear=false"
           v-bind:class="{ button_pressed: !isYear }">Месяца</button>
       </div>
-      <div class="col-xl-10 col-sm-11 ps-5 mt-3">
-        <vue-slider v-model="YearValue" :tooltip-placement="['top', 'bottom']" v-show='isYear' :max-range=2
-          tooltip='always' :processStyle="{height: '6px', margin: '2px'}" marks :min=YearMin :max=YearMax :dotSize=20
-          :height=10 @change="calculateMonths(),calculateDate() ">
-          <template #tooltip="{ index }">
-            <div v-if="index === 0" :class="['custom-tooltip']">{{calculatedDate[0]}}</div>
-            <div v-else :class="['custom-tooltip']">{{calculatedDate[1]}}</div>
-          </template>
-          <template v-slot:step="">
-            <div></div>
-          </template>
-          <template v-slot:label="{label}">
-            <div :class="['vue-slider-mark-label', 'custom-label']">{{ label }}</div>
-          </template>
-          <template v-slot:dot="">
-            <div :class="['custom-dot']"></div>
-          </template>
-        </vue-slider>
-        <vue-slider v-model="MonthValue" :tooltip-placement="['top', 'bottom']" v-show='!isYear' :dotSize=20 :height=10
-          tooltip='always' :data="calculatedMonths" :data-value="'id'" @change="calculateDate()">
-          <template #tooltip="{ index }">
-            <div v-if="index === 0" :class="['custom-tooltip']">{{calculatedDate[0]}}</div>
-            <div v-else :class="['custom-tooltip']">{{calculatedDate[1]}}</div>
-          </template>
-          <template v-slot:step="">
-            <div></div>
-          </template>
-          <template v-slot:label="{label,value}">
-            <div v-if="value % 12 === 0" :class="['vue-slider-mark-label', 'custom-label bold']">{{ label }}</div>
-            <div v-else :class="['vue-slider-mark-label', 'custom-label sizible']">{{ label }}</div>
-          </template>
-          <template v-slot:dot="">
-            <div :class="['custom-dot']"></div>
-          </template>
-        </vue-slider>
-      </div>
+      <Sliders :isYear=this.isYear />
     </div>
   </div>
 </template>
 <script>
-  import VueSlider from 'vue-slider-component' //Default slider component
-  import 'vue-slider-component/theme/default.css' //Deafaul slider styles
+  import 'vue-slider-component/theme/default.css' //Deafaul slider styles  
+  import Sliders from './Sliders.vue'
   export default {
     components: {
-      VueSlider
+      Sliders
     },
     name: 'Main',
     data() {
       return {
-        isYear: true, //Slider switch check
-        YearValue: [2019, 2021], //Value year slider    
-        MonthValue: [0, 84], //Value month slider     
-        YearMin: 2014, // Minimal year   
-        YearMax: 2021, // Maximal year          
-        calculatedDate: ["Январь 2001", "Январь 2022"], //Tooltip Date
-        calculatedMonths: [], //Data for Month slider
-        Month: [{ //Array of Month to work with
-          label: 'янв',
-          name: 'Январь'
-        }, {
-          label: 'фев',
-          name: 'Февраль'
-        }, {
-          label: 'мар',
-          name: 'Март'
-        }, {
-          label: 'апр',
-          name: 'Апрель'
-        }, {
-          label: 'май',
-          name: 'Май'
-        }, {
-          label: 'июн',
-          name: 'Июнь'
-        }, {
-          label: 'июл',
-          name: 'Июль'
-        }, {
-          label: 'авг',
-          name: 'Август'
-        }, {
-          label: 'сен',
-          name: 'Сентябрь'
-        }, {
-          label: 'окт',
-          name: 'Октябрь'
-        }, {
-          label: 'ноя',
-          name: 'Ноябрь'
-        }, {
-          label: 'дек',
-          name: 'Декабрь'
-        }, ],
-      }
-    },
-    beforeMount: function () {
-      this.calculateMonths()
-      this.calculateDate()
-    },
-    methods: {
-      calculateDate: function () { //Visualising data for tooltips  
-        this.calculatedDate[0] = this.calculatedMonths[this.MonthValue[0]].name + ' ' + this.calculatedMonths[this
-          .MonthValue[0] - (this.MonthValue[0] % 12)].label
-        this.calculatedDate[1] = this.calculatedMonths[this.MonthValue[1]].name + ' ' + this.calculatedMonths[this
-          .MonthValue[1] - (this.MonthValue[1] % 12)].label
-      },
-      calculateMonths: function () { //Calculating data for mouth slider
-        this.calculatedMonths = []
-        let $YearSpread = this.YearValue[1] - this.YearValue[0]
-        let $count = $YearSpread
-        let $id = 0
-        while ($count != -1) {
-          for (let $i = 0; $i < 12; $i++) {
-            if ($i == 0) {
-              this.calculatedMonths[$id] = {
-                label: this.YearValue[1] - $count,
-                name: this.Month[$i]['name'],
-                id: $id
-              }
-            } else {
-              this.calculatedMonths[$id] = {
-                label: this.Month[$i]['label'],
-                name: this.Month[$i]['name'],
-                id: $id
-              }
-            }
-            $id++
-          }
-          $count--
-        }
-        this.MonthValue[0] = 0
-        this.MonthValue[1] = $id - 1
+        isYear: true //Slider switch check    
       }
     }
   }
@@ -195,8 +78,14 @@
 
   .custom-label {
     color: #999999;
-    font-size: 0.8vw !important;
+    font-size: 18px !important;
     display: block !important;
+  }
+
+  @media (max-width: 1300px) {
+    .custom-label-month {
+      writing-mode: vertical-lr;
+    }
   }
 
   .bold {
